@@ -30,8 +30,8 @@
 
 #define LINES_MAX     MAX(MAX(DEPENDS_MAX, OUTS_MAX), SOURCES_MAX)
 #define MAX(a, b)     ((a) > (b) ? (a) : (b))
-#define TMPFILE       "/tmp/prXXXXXX"
-#define TMPFILE_SIZE  14
+#define TMPFILE       "/var/tmp/prXXXXXX"
+#define TMPFILE_SIZE  18
 
 struct Depend {
 	char pname[NAME_MAX];
@@ -327,7 +327,12 @@ createtmpdir(char dir[TMPFILE_SIZE])
 	int logfd;
 	struct PathNode *newtmpd;
 
-	if (mkdir("/tmp", 0700) == -1 && errno != EEXIST) {
+	if (mkdir("/var", 0700) == -1 && errno != EEXIST) {
+		printerrno("mkdir");
+		return EXIT_FAILURE;
+	}
+
+	if (mkdir("/var/tmp", 0700) == -1 && errno != EEXIST) {
 		printerrno("mkdir");
 		return EXIT_FAILURE;
 	}
