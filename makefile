@@ -1,7 +1,7 @@
 include config.mk
 
-OBJS = pr.o sha256.o
-OUT  = pr
+OBJS = pack.o sha256.o
+OUT  = pack
 
 .PHONY: clean install uninstall
 

@@ -1,4 +1,4 @@
-#define PROJECT_NAME "pr"
+#define PROJECT_NAME "pack"
 #define VERSION      "0.2"
 
 /* maximum limit for package resources */
