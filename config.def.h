@@ -1,4 +1,3 @@
-/* See LICENSE file for copyright and license details. */
 #define PROJECT_NAME "pr"
 #define VERSION      "0.2"
 

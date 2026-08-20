@@ -1,5 +1,3 @@
-/* See LICENSE file for copyright and license details. */
-
 #define _DEFAULT_SOURCE
 #define _POSIX_C_SOURCE 200809L
 #define _XOPEN_SOURCE   700
@@ -553,7 +551,7 @@ getpackages(struct PackageNames *pkgs)
 				i++;
 				continue;
 			}
-			
+
 			if (direxists(subd)) {
 				struct PathNode *new, *tail = d;
 
