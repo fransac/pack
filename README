@@ -1,7 +1,7 @@
 pr
 ==
 
-Package manager.
+A simple POSIX package manager.
 
 Requirements
 ------------
