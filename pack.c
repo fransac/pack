@@ -28,8 +28,8 @@
 
 #define LINES_MAX     MAX(MAX(DEPENDS_MAX, OUTS_MAX), SOURCES_MAX)
 #define MAX(a, b)     ((a) > (b) ? (a) : (b))
-#define TMPFILE       "/var/tmp/prXXXXXX"
-#define TMPFILE_SIZE  18
+#define TMPFILE       "/var/tmp/packXXXXXX"
+#define TMPFILE_SIZE  20
 
 struct Depend {
 	char pname[NAME_MAX];
