@@ -1,31 +1,34 @@
-pack
-====
+                                                                            PACK
 
 A simple POSIX package manager.
 
-Requirements
-------------
+
+REQUIREMENTS
+
 
 - C99 compiler
 - C POSIX library
 - OpenSSL
 
-Installaton
------------
+
+INSTALLATION
+
 
 	$ make
 	# make install
 
-Usage
------
+
+USAGE
+
 
 	pack -a [-s repo]
 	pack -i [-s repo] [-p prefix] package ...
 	pack -l [-s repo] [-p prefix]
 	pack -u [-s repo] [-p prefix] [-r] package ...
 
-Repositories
-------------
+
+USAGE
+
 
 The repository tree must have a set of directories, each named after the package
 it represents: each of these directories must contain the following mandatory
@@ -42,8 +45,8 @@ Each package directory may also contain the following optional files:
 The program chroots in a temporary directory before building a package: it is
 initialized with a /src directory and a /log file.
 
-> build
-> -------
+> BUILD
+>
 >
 > This file is an executable which is copied to the /src directory of the
 > temporary directory and called from it.
@@ -51,8 +54,8 @@ initialized with a /src directory and a /log file.
 > Its job is to build the package and install it to the root of the temporary
 > directory.
 
-> outs
-> ------
+> OUTS
+>
 >
 > Each line of the outs file must be the absolute path of each file to be
 > installed to the system.
@@ -67,8 +70,8 @@ initialized with a /src directory and a /log file.
 > directory, and the program will not chroot to it. Since this is potentially
 > unsafe, the user is prompted before installing it.
 
-> depends
-> ---------
+> DEPENDS
+>
 >
 > Each line of the depends file must be of the following format:
 >
@@ -85,12 +88,12 @@ initialized with a /src directory and a /log file.
 > Additionally, when *runtime* (written literally) is present after PACKAGE,
 > PACKAGE gets also installed to the system.
 
-> sources
-> ---------
+> SOURCES
+>
 >
 > Each line of the sources file must be of the following format:
 >
->     SHA256 URL [RELPATH]
+> 	SHA256 URL [RELPATH]
 >
 > Empty lines and lines starting with # are ignored.
 >
