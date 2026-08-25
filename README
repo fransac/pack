@@ -1,25 +1,23 @@
-                                                                            PACK
+Pack
+====
 
 A simple POSIX package manager.
 
-
-REQUIREMENTS
-
+Requirements
+------------
 
 - C99 compiler
 - C POSIX library
 - OpenSSL
 
-
-INSTALLATION
-
+Installation
+------------
 
 	$ make
 	# make install
 
-
-USAGE
-
+Usage
+-----
 
 	pack -a [-s repo]
 	pack -i [-s repo] [-p prefix] package ...
@@ -27,8 +25,8 @@ USAGE
 	pack -u [-s repo] [-p prefix] [-r] package ...
 
 
-USAGE
-
+Repositories
+------------
 
 The repository tree must have a set of directories, each named after the package
 it represents: each of these directories must contain the following mandatory
@@ -45,8 +43,8 @@ Each package directory may also contain the following optional files:
 The program chroots in a temporary directory before building a package: it is
 initialized with a /src directory and a /log file.
 
-> BUILD
->
+> build
+> -----
 >
 > This file is an executable which is copied to the /src directory of the
 > temporary directory and called from it.
@@ -54,8 +52,8 @@ initialized with a /src directory and a /log file.
 > Its job is to build the package and install it to the root of the temporary
 > directory.
 
-> OUTS
->
+> outs
+> ----
 >
 > Each line of the outs file must be the absolute path of each file to be
 > installed to the system.
@@ -70,12 +68,12 @@ initialized with a /src directory and a /log file.
 > directory, and the program will not chroot to it. Since this is potentially
 > unsafe, the user is prompted before installing it.
 
-> DEPENDS
->
+> depends
+> -------
 >
 > Each line of the depends file must be of the following format:
 >
->     PACKAGE [runtime]
+> 	PACKAGE [runtime]
 >
 > Empty lines and lines starting with # are ignored.
 >
@@ -88,8 +86,8 @@ initialized with a /src directory and a /log file.
 > Additionally, when "runtime" (written literally) is present after PACKAGE,
 > PACKAGE gets also installed to the system.
 
-> SOURCES
->
+> sources
+> -------
 >
 > Each line of the sources file must be of the following format:
 >
