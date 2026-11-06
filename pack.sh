@@ -117,6 +117,108 @@ installedpackages()
 	done
 }
 
+installpackage()
+{
+	[ $# -ne 2 ] && return 1
+
+	installedpackages | sed "s|^$repo/||" | grep -qx "$1" && return 0
+
+	tmp=$(mktemp -dt 'packXXXXXX')
+	chmod 700 "$tmp"
+
+	# Install non-runtime packages to tmp.
+	for p in $(packagedependencies "$1" | grep '\t0' | cut -f 1)
+	do
+		installpackage "$p" "$tmp"
+	done
+
+	echo "Installing $1 to $2/."
+
+	{
+		mkdir -p "$tmp/src"
+		cp "$repo/$1/build" "$tmp/src"
+		chmod 700 "$tmp/src/build"
+
+		# Copy sources.
+		[ -e "$repo/$1/sources" ] && while read -r l
+		do
+			sha256=$(printf '%s\n' "$l"  | cut -f 1)
+			url=$(printf '%s\n' "$l"     | cut -f 2)
+			relpath=$(printf '%s\n' "$l" | cut -f 3)
+
+			case "$url" in
+				http://*|https://*|ftp://*|ftps://*)
+					if [ -n "$relpath" ]
+					then
+						target="$tmp/src/$relpath"
+					else
+						urlbn=$(basename "$url")
+						target="$tmp/src/$urlbn"
+					fi
+
+					echo "Downloading $url."
+					curl -sL "$url" > "$target"
+					;;
+				*)
+					if [ -n "$relpath" ]
+					then
+						target="$tmp/src/$relpath"
+					else
+						target="$tmp/src/$url"
+					fi
+
+					cp "$repo/$1/$url" "$target"
+					;;
+			esac
+
+			chmod 600 "$target"
+
+			if ! printf '%s %s\n' "$sha256" "$target" \
+			   | sha256sum -c > /dev/null
+			then
+				expected=$(sha256sum "$target" | cut -d ' ' -f 1)
+
+				error $({
+					echo "Hash of $url does not match."
+					echo "Expected: $expected"
+					echo "Got:      $sha256"
+				})
+			fi
+		done < "$repo/$1/sources"
+
+		# Build.
+		if head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
+		then
+			cd "$tmp/src"
+			./build
+		else
+			chroot "$tmp" /src/build
+		fi
+
+		# Install.
+		while read -r l
+		do
+			case "$l" in
+				\/*)
+					mkdir -p "$(dirname "$2$l")"
+					cp -rf "$tmp$l" "$2$l"
+					;;
+			esac
+		done < "$repo/$1/outs"
+	} || {
+		rm -rf "$tmp"
+		return 1
+	}
+
+	rm -rf "$tmp"
+
+	# Install runtime packages.
+	for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
+	do
+		installpackage "$p" "$2"
+	done
+}
+
 uninstallpackage()
 {
 	[ $# -ne 2 ] && return 1
@@ -151,3 +253,6 @@ uninstallpackage()
 
 # u flag.
 [ $uflag -eq 1 ] && uninstallpackage "$1" $rflag
+
+# i flag.
+[ $iflag -eq 1 ] && installpackage "$1" "$prefix"
