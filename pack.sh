@@ -14,10 +14,10 @@ allpackages()
 	done
 }
 
-# Prints message $1 to stderr.
+# Prints message $1 to stderr, prefixing it with the program name.
 log()
 {
-	printf '%s\n' "$1" >&2
+	printf '%s: %s\n' "$program" "$1" >&2
 }
 
 # Returns a multi-line tab-separated list, where each line is a dependency of $1.
