@@ -281,10 +281,10 @@ uninstallpackage()
 # Fails after printing the synopsis of the program to stderr.
 usage()
 {
-	echo "Usage: $program add [-s repo] [-p prefix] package ..." >&2
-	echo "       $program all [-s repo]" >&2
-	echo "       $program del [-s repo] [-p prefix] [-r] package ..." >&2
-	echo "       $program ls [-s repo] [-p prefix]" >&2
+	echo "Usage: $program [-s repo] all" >&2
+	echo "       $program [-s repo] [-p prefix] ls" >&2
+	echo "       $program [-s repo] [-p prefix] add package ..." >&2
+	echo "       $program [-s repo] [-p prefix] [-r] del package ..." >&2
 	return 1
 }
 

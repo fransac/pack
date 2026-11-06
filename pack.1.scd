@@ -6,10 +6,10 @@ pack - manage packages
 
 # SYNOPSIS
 
-*pack* add [-s _repo_] [-p _prefix_] _package_ ... ++
-*pack* all [-s _repo_] ++
-*pack* del [-s _repo_] [-p _prefix_] [-r] _package_ ... ++
-*pack* ls [-s _repo_] [-p _prefix_]
+*pack* [-s _repo_] all ++
+*pack* [-s _repo_] [-p _prefix_] ls ++
+*pack* [-s _repo_] [-p _prefix_] add _package_ ... ++
+*pack* [-s _repo_] [-p _prefix_] [-r] del _package_ ...
 
 # DESCRIPTION
 
