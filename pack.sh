@@ -283,8 +283,8 @@ usage()
 {
 	echo "Usage: $program [-s repo] all" >&2
 	echo "       $program [-s repo] [-p prefix] ls" >&2
-	echo "       $program [-s repo] [-p prefix] add package ..." >&2
-	echo "       $program [-s repo] [-p prefix] [-r] del package ..." >&2
+	echo "       $program [-s repo] [-p prefix] add [package ...]" >&2
+	echo "       $program [-s repo] [-p prefix] [-r] del [package ...]" >&2
 	return 1
 }
 
@@ -346,7 +346,6 @@ shift 1
 [ $((addcmd + pflag)) -gt 1 ] && usage
 [ $# -gt 0 ] && [ $addcmd -eq 0 ] && [ $delcmd -eq 0 ] && usage
 [ $rflag -eq 1 ] && [ $delcmd -eq 0 ] && usage
-[ $# -eq 0 ] && [ $((addcmd + delcmd )) -eq 1 ] && usage
 
 # All command.
 [ $allcmd -eq 1 ] && allpackages | sed "s|^$repo/||"

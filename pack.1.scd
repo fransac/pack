@@ -8,8 +8,8 @@ pack - manage packages
 
 *pack* [-s _repo_] all ++
 *pack* [-s _repo_] [-p _prefix_] ls ++
-*pack* [-s _repo_] [-p _prefix_] add _package_ ... ++
-*pack* [-s _repo_] [-p _prefix_] [-r] del _package_ ...
+*pack* [-s _repo_] [-p _prefix_] add [_package_ ...] ++
+*pack* [-s _repo_] [-p _prefix_] [-r] del [_package_ ...]
 
 # DESCRIPTION
 
