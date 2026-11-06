@@ -59,3 +59,14 @@ shift $((OPTIND - 1))
 [ $r -eq 1 ] && [ $u -eq 0 ] && usage
 [ $# -gt 0 ] && [ $i -eq 0 ] && [ $u -eq 0 ] && usage
 [ $# -eq 0 ] && [ $((i + u)) -eq 1 ] && usage
+
+# a flag.
+if [ $a -eq 1 ]
+then
+	for d in $(find "$repo"/* -type d)
+	do
+		[ -d "$d" ] && [ -f "$d/outs" ] \
+		            && [ -f "$d/build" ] \
+		            && printf '%s\n' "${d#$repo/}"
+	done
+fi
