@@ -231,11 +231,13 @@ installpackage()
 
 	rm -rf "$tmp"
 
-	# Install runtime packages.
+	# Install runtime packages. On error, uninstall the dependant package
+	# and all of the others runtime dependencies, which could have been
+	# already installed.
 	for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
 	do
 		installpackage "$p" "$2"
-	done
+	done || uninstallpackage "$1" 1
 }
 
 uninstallpackage()
