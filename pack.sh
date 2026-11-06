@@ -87,7 +87,9 @@ installpackage()
 	chmod 700 "$tmp"
 
 	# Install non-runtime packages to tmp.
-	for p in $(packagedependencies "$1" | grep '\t0$' | cut -f 1)
+	for p in $(packagedependencies "$1" | grep '\t0$' \
+	                                    | cut -f 1 \
+	                                    || true)
 	do
 		installpackage "$p" "$tmp"
 	done
@@ -220,7 +222,9 @@ installpackage()
 	# Install runtime packages. On fail, uninstall the dependant package
 	# and all of the others runtime dependencies, which could have been
 	# already installed.
-	for p in $(packagedependencies "$1" | grep '\t1$' | cut -f 1)
+	for p in $(packagedependencies "$1" | grep '\t1$' \
+	                                    | cut -f 1 \
+	                                    || true)
 	do
 		installpackage "$p" "$2"
 	done || uninstallpackage "$1" "$2" 1
@@ -243,7 +247,7 @@ uninstallpackage()
 	# uninstall.
 	for p in $(installedpackages "$2" | sed "s|^$repo/||")
 	do
-		rdeps=$(packagedependencies "$p" | grep "^$1\t1\$")
+		rdeps=$(packagedependencies "$p" | grep "^$1\t1\$" || true)
 		if [ -n "$rdeps" ]
 		then
 			log "Not uninstalling $1 since $p depends on it."
@@ -265,7 +269,9 @@ uninstallpackage()
 	# Recursive.
 	if [ "$3" -eq 1 ]
 	then
-		for p in $(packagedependencies "$1" | grep '\t1$' | cut -f 1)
+		for p in $(packagedependencies "$1" | grep '\t1$'\
+		                                    | cut -f 1 \
+		                                    || true)
 		do
 			uninstallpackage "$p" "$2" 1
 		done
