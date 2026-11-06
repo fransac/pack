@@ -201,7 +201,7 @@ uninstallpackage()
 
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
-	# If at least one installed package runtime-depends from this one, do not
+	# If at least one installed package runtime-depends on this one, do not
 	# uninstall.
 	for p in $(installedpackages | sed "s|^$repo/||")
 	do
