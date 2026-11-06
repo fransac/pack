@@ -172,7 +172,8 @@ installpackage()
 		if [ $fail -eq 0 ] \
 		&& head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
 		then
-			printf "Package $1 won't chroot. Enter y to continue: "
+			log "Package $1 won't chroot."
+			printf '(y) ' >&2
 			read -r y
 			if [ "$y" != 'y' ]
 			then
