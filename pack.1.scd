@@ -41,3 +41,7 @@ ls
 
 _PACK_REPOSITORY_
 	The package repository. If unset, "/src" is used.
+
+# SEE ALSO
+
+_pack_(5)

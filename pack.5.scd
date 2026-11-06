@@ -78,3 +78,7 @@ _sources_
 
 	An optional _RELPATH_ field may be provided; it is the path, relative to "/src",
 	where the fetched source file is moved to after being retrieved and checked.
+
+# SEE ALSO
+
+_pack_(1)
