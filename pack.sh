@@ -20,13 +20,13 @@ usage()
 	error "$u"
 }
 
-a=0
-i=0
-l=0
-p=0
-r=0
-s=0
-u=0
+aflag=0
+iflag=0
+lflag=0
+pflag=0
+rflag=0
+sflag=0
+uflag=0
 
 prefix=''
 repo='/src'
@@ -34,19 +34,19 @@ repo='/src'
 while getopts "ailp:rs:u" o 2> /dev/null
 do
 	case "$o" in
-	a) a=1 ;;
-	i) i=1 ;;
-	l) l=1 ;;
+	a) aflag=1 ;;
+	i) iflag=1 ;;
+	l) lflag=1 ;;
 	p)
-		p=1
+		pflag=1
 		prefix="$OPTARG"
 		;;
-	r) r=1 ;;
+	r) rflag=1 ;;
 	s)
-		s=1
+		sflag=1
 		repo="$OPTARG"
 		;;
-	u) u=1 ;;
+	u) uflag=1 ;;
 	*) usage ;;
 	esac
 done
@@ -54,11 +54,11 @@ done
 shift $((OPTIND - 1))
 
 # Check arguments.
-[ $((a + i + l + u)) -ne 1 ] && usage
-[ $((a + p)) -gt 1 ] && usage
-[ $r -eq 1 ] && [ $u -eq 0 ] && usage
-[ $# -gt 0 ] && [ $i -eq 0 ] && [ $u -eq 0 ] && usage
-[ $# -eq 0 ] && [ $((i + u)) -eq 1 ] && usage
+[ $((aflag + iflag + lflag + uflag)) -ne 1 ] && usage
+[ $((aflag + pflag)) -gt 1 ] && usage
+[ $rflag -eq 1 ] && [ $uflag -eq 0 ] && usage
+[ $# -gt 0 ] && [ $iflag -eq 0 ] && [ $uflag -eq 0 ] && usage
+[ $# -eq 0 ] && [ $((iflag + uflag)) -eq 1 ] && usage
 
 # Utilities.
 allpackages()
@@ -121,10 +121,10 @@ uninstallpackage()
 }
 
 # a flag.
-[ $a -eq 1 ] && allpackages | sed "s|^$repo/||"
+[ $aflag -eq 1 ] && allpackages | sed "s|^$repo/||"
 
 # l flag.
-[ $l -eq 1 ] && installedpackages | sed "s|^$repo/||"
+[ $lflag -eq 1 ] && installedpackages | sed "s|^$repo/||"
 
 # u flag.
-[ $u -eq 1 ] && uninstallpackage "$1"
+[ $uflag -eq 1 ] && uninstallpackage "$1"
