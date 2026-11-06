@@ -110,6 +110,8 @@ uninstallpackage()
 
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
+	echo "Uninstalling $p."
+
 	while read -r l
 	do
 		case "$l" in
