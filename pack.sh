@@ -146,6 +146,8 @@ installpackage()
 			url=$(printf '%s\n' "$l"     | cut -f 2)
 			relpath=$(printf '%s\n' "$l" | cut -f 3)
 
+			[ -z "$url" ] && continue
+
 			case "$url" in
 				http://*|https://*|ftp://*|ftps://*)
 					if [ -n "$relpath" ]
