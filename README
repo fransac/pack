@@ -7,8 +7,10 @@ Requirements
 ------------
 
 - cURL
+- scdoc
 
 Installation
 ------------
 
+	$ make
 	# make install
