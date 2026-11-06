@@ -205,7 +205,11 @@ uninstallpackage()
 	# uninstall.
 	for p in $(installedpackages | sed "s|^$repo/||")
 	do
-		[ -n "$(packagedependencies "$p" | grep '$1\t1')" ] && return 0
+		if [ -n "$(packagedependencies "$p" | grep '$1\t1')" ]
+		then
+			echo "Not uninstalling $1 since $p depends on it."
+			return 0
+		fi
 	done
 
 	echo "Uninstalling $p."
