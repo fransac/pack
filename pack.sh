@@ -73,9 +73,9 @@ allpackages()
 
 packagedependencies()
 {
-	[ $# -ne 1 ] && exit 1
+	[ $# -ne 1 ] && return 1
 
-	[ ! -e "$repo/$1/depends" ] && exit 0
+	[ ! -e "$repo/$1/depends" ] && return 0
 
 	while read -r l
 	do
@@ -106,9 +106,9 @@ installedpackages()
 
 uninstallpackage()
 {
-	[ $# -ne 2 ] && exit 1
+	[ $# -ne 2 ] && return 1
 
-	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || exit 0
+	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
 	while read -r l
 	do
