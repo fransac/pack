@@ -28,6 +28,7 @@ packagedependencies()
 {
 	[ $# -ne 1 ] && return 1
 
+	# If the depends file does not exist, the package has no dependency.
 	[ ! -f "$repo/$1/depends" ] && return 0
 
 	while read -r l
@@ -42,6 +43,8 @@ packagedependencies()
 			runtime=0
 		fi
 
+		# Only print the instances that represent actual existing
+		# packages.
 		if allpackages | sed "s|^$repo/||" | grep -qx "$p"
 		then
 			printf '%s\t%s\n' "$l" "$runtime"
@@ -73,6 +76,7 @@ installpackage()
 {
 	[ $# -ne 2 ] && return 1
 
+	# Skip if already installed.
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" && return 0
 
 	tmp=$(mktemp -dt 'packXXXXXX')
@@ -87,6 +91,7 @@ installpackage()
 	echo "Installing $1 to $2/."
 
 	{
+		# Copy build.
 		mkdir -p "$tmp/src"
 		cp "$repo/$1/build" "$tmp/src"
 		chmod 700 "$tmp/src/build"
@@ -98,6 +103,7 @@ installpackage()
 			url=$(printf '%s\n' "$l"     | cut -f 2)
 			relpath=$(printf '%s\n' "$l" | cut -f 3)
 
+			# The URL field is mandatory.
 			[ -z "$url" ] && continue
 
 			case "$url" in
@@ -199,6 +205,7 @@ uninstallpackage()
 {
 	[ $# -ne 2 ] && return 1
 
+	# Skip if not installed.
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
 	# If at least one installed package runtime-depends on this one, do not
@@ -223,6 +230,7 @@ uninstallpackage()
 		esac
 	done < "$repo/$1/outs"
 
+	# Recursive.
 	if [ "$2" -eq 1 ]
 	then
 		for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
