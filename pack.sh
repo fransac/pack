@@ -144,7 +144,7 @@ installpackage()
 
 					if [ ! -f "$src" ]
 					then
-						log "Non-existent source file $src."
+						log "Source file $src does not exist."
 						fail=1
 						break
 					fi
@@ -193,7 +193,7 @@ installpackage()
 				\/*)
 					if [ ! -e "$tmp$l" ]
 					then
-						log "Out file $l was not build."
+						log "Out file $l was not built."
 						fail=1
 						break
 					else
