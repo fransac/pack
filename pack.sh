@@ -61,6 +61,8 @@ shift $((OPTIND - 1))
 [ $# -eq 0 ] && [ $((iflag + uflag)) -eq 1 ] && usage
 
 # Utilities.
+
+# Returns a newline-separated list of all packages.
 allpackages()
 {
 	for d in $(find "$repo"/* -type d)
@@ -71,6 +73,9 @@ allpackages()
 	done
 }
 
+# Returns a multi-line tab-separated list, where each line is a dependency of $1.
+# The first column is the name of each dependency; the second column is 1 if the
+# dependency is runtime, or 0 otherwise.
 packagedependencies()
 {
 	[ $# -ne 1 ] && return 1
@@ -96,6 +101,7 @@ packagedependencies()
 	done < "$repo/$1/depends"
 }
 
+# Returns a newline-separated list of packages installed in $prefix.
 installedpackages()
 {
 	for p in $(allpackages)
@@ -117,6 +123,7 @@ installedpackages()
 	done
 }
 
+# Installs package $1 and its runtime dependencies in prefix $2.
 installpackage()
 {
 	[ $# -ne 2 ] && return 1
@@ -240,6 +247,9 @@ installpackage()
 	done || uninstallpackage "$1" 1
 }
 
+# Uninstalls package $1 from $prefix, if none of the other installed packages
+# depend on it. If $2 is 1, the runtime dependencies of $1 are also uninstalled
+# from $prefix.
 uninstallpackage()
 {
 	[ $# -ne 2 ] && return 1
