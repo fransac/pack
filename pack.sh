@@ -159,7 +159,13 @@ installpackage()
 					fi
 
 					echo "Downloading $url."
+
 					curl -sL "$url" > "$target"
+
+					if [ $? -ne 0 ]
+					then
+						error "Failed to download $url."
+					fi
 					;;
 				*)
 					if [ -n "$relpath" ]
@@ -169,7 +175,12 @@ installpackage()
 						target="$tmp/src/$url"
 					fi
 
-					cp "$repo/$1/$url" "$target"
+					src="$repo/$1/$url"
+
+					[ -f "$src" ] \
+					|| error "Non-existent source file $src."
+
+					cp "$src" "$target"
 					;;
 			esac
 
@@ -202,6 +213,9 @@ installpackage()
 		do
 			case "$l" in
 				\/*)
+					[ ! -e "$tmp$l" ] \
+					|| error "Out file $l was not build."
+
 					mkdir -p "$(dirname "$2$l")"
 					cp -rf "$tmp$l" "$2$l"
 					;;
