@@ -46,7 +46,7 @@ packagedependencies()
 		# packages.
 		if allpackages | sed "s|^$repo/||" | grep -q "^$p\$"
 		then
-			printf '%s\t%s\n' "$l" "$runtime"
+			printf '%s\t%s\n' "$p" "$runtime"
 		fi
 	done < "$repo/$1/depends"
 }
