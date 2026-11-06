@@ -263,13 +263,13 @@ uninstallpackage()
 	fi
 }
 
-# Fails after logging the synopsis of the program.
+# Fails after printing the synopsis of the program to stderr.
 usage()
 {
-	log "Usage: $program -a [-s repo]"
-	log "       $program -i [-s repo] [-p prefix] package ..."
-	log "       $program -l [-s repo] [-p prefix]"
-	log "       $program -u [-s repo] [-p prefix] [-r] package ..."
+	echo "Usage: $program add [-s repo] [-p prefix] package ..." >&2
+	echo "       $program all [-s repo]" >&2
+	echo "       $program del [-s repo] [-p prefix] [-r] package ..." >&2
+	echo "       $program ls [-s repo] [-p prefix]" >&2
 	return 1
 }
 
