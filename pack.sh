@@ -202,8 +202,8 @@ installpackage()
 		# Build.
 		if head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
 		then
-			cd "$tmp/src"
-			./build
+			cd "$tmp"
+			./src/build
 		else
 			chroot "$tmp" /src/build
 		fi
