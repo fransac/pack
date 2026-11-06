@@ -52,9 +52,11 @@ packagedependencies()
 	done < "$repo/$1/depends"
 }
 
-# Returns a newline-separated list of packages installed in $prefix.
+# Returns a newline-separated list of packages installed in $1.
 installedpackages()
 {
+	[ $# -ne 1 ] && return 1
+
 	for p in $(allpackages)
 	do
 		notinst=0
@@ -62,8 +64,7 @@ installedpackages()
 		do
 			case "$l" in
 				\/*)
-					[ ! -e "$prefix$l" ] && notinst=1 \
-					                     && break
+					[ ! -e "$1$l" ] && notinst=1 && break
 					;;
 			esac
 		done < "$p/outs"
@@ -77,7 +78,7 @@ installpackage()
 	[ $# -ne 2 ] && return 1
 
 	# Skip if already installed.
-	installedpackages | sed "s|^$repo/||" | grep -qx "$1" && return 0
+	installedpackages "$2" | sed "s|^$repo/||" | grep -qx "$1" && return 0
 
 	tmp=$(mktemp -dt 'packXXXXXX')
 	chmod 700 "$tmp"
@@ -195,22 +196,21 @@ installpackage()
 	for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
 	do
 		installpackage "$p" "$2"
-	done || uninstallpackage "$1" 1
+	done || uninstallpackage "$1" "$2" 1
 }
 
-# Uninstalls package $1 from $prefix, if none of the other installed packages
-# depend on it. If $2 is 1, the runtime dependencies of $1 are also uninstalled
-# from $prefix.
+# Uninstalls package $1 from $2, if none of the other installed packages depend on
+# it. If $3 is 1, the runtime dependencies of $1 are also uninstalled from $2.
 uninstallpackage()
 {
-	[ $# -ne 2 ] && return 1
+	[ $# -ne 3 ] && return 1
 
 	# Skip if not installed.
-	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
+	installedpackages "$2" | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
 	# If at least one installed package runtime-depends on this one, do not
 	# uninstall.
-	for p in $(installedpackages | sed "s|^$repo/||")
+	for p in $(installedpackages "$2" | sed "s|^$repo/||")
 	do
 		if [ -n "$(packagedependencies "$p" | grep '$1\t1')" ]
 		then
@@ -225,17 +225,17 @@ uninstallpackage()
 	do
 		case "$l" in
 			\/*)
-				rm -rf "$prefix$l"
+				rm -rf "$2$l"
 				;;
 		esac
 	done < "$repo/$1/outs"
 
 	# Recursive.
-	if [ "$2" -eq 1 ]
+	if [ "$3" -eq 1 ]
 	then
 		for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
 		do
-			uninstallpackage "$p" 1
+			uninstallpackage "$p" "$2" 1
 		done
 	fi
 }
@@ -298,10 +298,10 @@ shift $((OPTIND - 1))
 [ $aflag -eq 1 ] && allpackages | sed "s|^$repo/||"
 
 # l flag.
-[ $lflag -eq 1 ] && installedpackages | sed "s|^$repo/||"
+[ $lflag -eq 1 ] && installedpackages "$prefix" | sed "s|^$repo/||"
 
 # u flag.
-[ $uflag -eq 1 ] && uninstallpackage "$1" $rflag
+[ $uflag -eq 1 ] && uninstallpackage "$1" "$prefix" $rflag
 
 # i flag.
 [ $iflag -eq 1 ] && installpackage "$1" "$prefix"
