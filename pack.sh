@@ -79,7 +79,20 @@ packagedependencies()
 
 	while read -r l
 	do
-		allpackages | sed "s|^$repo/||" | grep -x "$l"
+		p=$(printf '%s\n' "$l" | cut -f 1)
+		r=$(printf '%s\n' "$l" | cut -f 2)
+
+		if [ "$r" == 'runtime' ]
+		then
+			runtime=1
+		else
+			runtime=0
+		fi
+
+		if allpackages | sed "s|^$repo/||" | grep -qx "$p"
+		then
+			printf '%s\t%s\n' "$l" "$runtime"
+		fi
 	done < "$repo/$1/depends"
 }
 
@@ -123,7 +136,7 @@ uninstallpackage()
 
 	if [ "$2" -eq 1 ]
 	then
-		for p in $(packagedependencies "$1")
+		for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
 		do
 			uninstallpackage "$p" 1
 		done
