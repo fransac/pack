@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eu
 
+if [ "$(id -u)" -ne 0 ]
+then
+	printf '%s\n' "Superuser privileges are required." >&2
+	exit 1
+fi
+
 program=$(basename "$0")
 
 # Returns a newline-separated list of all packages.
