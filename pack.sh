@@ -14,11 +14,17 @@ allpackages()
 	done
 }
 
-# Prints message $1 and fails.
+# Logs message $1 and fails.
 error()
 {
-	printf '%s\n' "$1" >&2
+	log "$1"
 	return 1
+}
+
+# Prints message $1 to stderr.
+log()
+{
+	printf '%s\n' "$1" >&2
 }
 
 # Returns a multi-line tab-separated list, where each line is a dependency of $1.
@@ -89,7 +95,7 @@ installpackage()
 		installpackage "$p" "$tmp"
 	done
 
-	echo "Installing $1 to $2/."
+	log "Installing $1 to $2/."
 
 	{
 		# Copy build.
@@ -117,7 +123,7 @@ installpackage()
 						target="$tmp/src/$urlbn"
 					fi
 
-					echo "Downloading $url."
+					log "Downloading $url."
 
 					curl -sL "$url" > "$target"
 
@@ -214,12 +220,12 @@ uninstallpackage()
 	do
 		if [ -n "$(packagedependencies "$p" | grep '$1\t1')" ]
 		then
-			echo "Not uninstalling $1 since $p depends on it."
+			log "Not uninstalling $1 since $p depends on it."
 			return 0
 		fi
 	done
 
-	echo "Uninstalling $p."
+	log "Uninstalling $p."
 
 	while read -r l
 	do
