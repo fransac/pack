@@ -104,8 +104,27 @@ installedpackages()
 	done
 }
 
+uninstallpackage()
+{
+	[ $# -ne 1 ] && exit 1
+
+	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || exit 0
+
+	while read -r l
+	do
+		case "$l" in
+			\/*)
+				rm -rf "$prefix$l"
+				;;
+		esac
+	done < "$repo/$1/outs"
+}
+
 # a flag.
 [ $a -eq 1 ] && allpackages | sed "s|^$repo/||"
 
 # l flag.
 [ $l -eq 1 ] && installedpackages | sed "s|^$repo/||"
+
+# u flag.
+[ $u -eq 1 ] && uninstallpackage "$1"
