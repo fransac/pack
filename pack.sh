@@ -246,6 +246,13 @@ uninstallpackage()
 
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || return 0
 
+	# If at least one installed package runtime-depends from this one, do not
+	# uninstall.
+	for p in $(installedpackages | sed "s|^$repo/||")
+	do
+		[ -n "$(packagedependencies "$p" | grep '$1\t1')" ] && return 0
+	done
+
 	echo "Uninstalling $p."
 
 	while read -r l
