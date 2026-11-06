@@ -71,6 +71,18 @@ allpackages()
 	done
 }
 
+packagedependencies()
+{
+	[ $# -ne 1 ] && exit 1
+
+	[ ! -e "$repo/$1/depends" ] && exit 0
+
+	while read -r l
+	do
+		allpackages | sed "s|^$repo/||" | grep -x "$l"
+	done < "$repo/$1/depends"
+}
+
 installedpackages()
 {
 	for p in $(allpackages)
