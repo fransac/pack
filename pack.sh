@@ -14,13 +14,6 @@ allpackages()
 	done
 }
 
-# Logs message $1 and fails.
-error()
-{
-	log "$1"
-	return 1
-}
-
 # Prints message $1 to stderr.
 log()
 {
@@ -98,6 +91,8 @@ installpackage()
 	log "Installing $1 to $2/."
 
 	{
+		fail=0
+
 		# Copy build.
 		mkdir -p "$tmp/src"
 		cp "$repo/$1/build" "$tmp/src"
@@ -129,7 +124,9 @@ installpackage()
 
 					if [ $? -ne 0 ]
 					then
-						error "Failed to download $url."
+						log "Failed to download $url."
+						fail=1
+						break
 					fi
 					;;
 				..*)
@@ -145,8 +142,12 @@ installpackage()
 
 					src="$repo/$1/$url"
 
-					[ -f "$src" ] \
-					|| error "Non-existent source file $src."
+					if [ ! -f "$src" ]
+					then
+						log "Non-existent source file $src."
+						fail=1
+						break
+					fi
 
 					cp "$src" "$target"
 					;;
@@ -159,36 +160,51 @@ installpackage()
 			then
 				expected=$(sha256sum "$target" | cut -d ' ' -f 1)
 
-				error $({
-					echo "Hash of $url does not match."
-					echo "Expected: $expected"
-					echo "Got:      $sha256"
-				})
+				log "Hash of $url does not match."
+				log "Expected: $expected"
+				log "Got:      $sha256"
+				fail=1
+				break
 			fi
 		done < "$repo/$1/sources"
 
-		# Build.
-		if head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
+		# Build if not failed.
+		if [ $fail -eq 0 ] \
+		&& head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
 		then
-			cd "$tmp"
-			PREFIX="$2" ./src/build
+			printf "Package $1 won't chroot. Enter y to continue: "
+			read -r y
+			if [ "$y" != 'y' ]
+			then
+				fail=1
+			else
+				cd "$tmp"
+				PREFIX="$2" ./src/build
+			fi
 		else
 			chroot "$tmp" /src/build
 		fi
 
-		# Install.
-		while read -r l
+		# Install if not failed.
+		[ $fail -eq 0 ] && while read -r l
 		do
 			case "$l" in
 				\/*)
-					[ ! -e "$tmp$l" ] \
-					|| error "Out file $l was not build."
-
-					mkdir -p "$(dirname "$2$l")"
-					cp -rf "$tmp$l" "$2$l"
+					if [ ! -e "$tmp$l" ]
+					then
+						log "Out file $l was not build."
+						fail=1
+						break
+					else
+						mkdir -p "$(dirname "$2$l")"
+						cp -rf "$tmp$l" "$2$l"
+					fi
 					;;
 			esac
 		done < "$repo/$1/outs"
+
+		# If flagged, fail.
+		[ $fail -eq 0 ]
 	} || {
 		rm -rf "$tmp"
 		return 1
@@ -196,7 +212,7 @@ installpackage()
 
 	rm -rf "$tmp"
 
-	# Install runtime packages. On error, uninstall the dependant package
+	# Install runtime packages. On fail, uninstall the dependant package
 	# and all of the others runtime dependencies, which could have been
 	# already installed.
 	for p in $(packagedependencies "$1" | grep '\t1' | cut -f 1)
@@ -246,16 +262,14 @@ uninstallpackage()
 	fi
 }
 
-# Errors the synopsis of the program.
+# Fails after logging the synopsis of the program.
 usage()
 {
-	u=$({
-		echo "Usage: $program -a [-s repo]"
-		echo "       $program -i [-s repo] [-p prefix] package ..."
-		echo "       $program -l [-s repo] [-p prefix]"
-		echo "       $program -u [-s repo] [-p prefix] [-r] package ..."
-	})
-	error "$u"
+	log "Usage: $program -a [-s repo]"
+	log "       $program -i [-s repo] [-p prefix] package ..."
+	log "       $program -l [-s repo] [-p prefix]"
+	log "       $program -u [-s repo] [-p prefix] [-r] package ..."
+	return 1
 }
 
 # Flags.
