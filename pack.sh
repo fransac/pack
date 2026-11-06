@@ -28,7 +28,7 @@ r=0
 s=0
 u=0
 
-prefix='/'
+prefix=''
 repo='/src'
 
 while getopts "ailp:rs:u" o 2> /dev/null
