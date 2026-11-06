@@ -348,14 +348,20 @@ shift 1
 [ $rflag -eq 1 ] && [ $delcmd -eq 0 ] && usage
 [ $# -eq 0 ] && [ $((addcmd + delcmd )) -eq 1 ] && usage
 
-# Add command.
-[ $addcmd -eq 1 ] && installpackage "$1" "$prefix"
-
 # All command.
 [ $allcmd -eq 1 ] && allpackages | sed "s|^$repo/||"
 
-# Del command.
-[ $delcmd -eq 1 ] && uninstallpackage "$1" "$prefix" $rflag
-
 # Ls command.
 [ $lscmd -eq 1 ] && installedpackages "$prefix" | sed "s|^$repo/||"
+
+# Add command.
+[ $addcmd -eq 1 ] && for p in $@
+do
+	installpackage "$p" "$prefix"
+done
+
+# Del command.
+[ $delcmd -eq 1 ] && for p in $@
+do
+	uninstallpackage "$p" "$prefix" $rflag
+done
