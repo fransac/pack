@@ -60,13 +60,16 @@ shift $((OPTIND - 1))
 [ $# -gt 0 ] && [ $i -eq 0 ] && [ $u -eq 0 ] && usage
 [ $# -eq 0 ] && [ $((i + u)) -eq 1 ] && usage
 
-# a flag.
-if [ $a -eq 1 ]
-then
+# Utilities.
+allpackages()
+{
 	for d in $(find "$repo"/* -type d)
 	do
 		[ -d "$d" ] && [ -f "$d/outs" ] \
 		            && [ -f "$d/build" ] \
-		            && printf '%s\n' "${d#$repo/}"
+		            && printf '%s\n' "$d"
 	done
-fi
+}
+
+# a flag.
+[ $a -eq 1 ] && allpackages | sed "s|^$repo/||"
