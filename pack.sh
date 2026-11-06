@@ -6,7 +6,7 @@ program=$(basename "$0")
 error()
 {
 	printf '%s\n' "$1" >&2
-	exit 1
+	return 1
 }
 
 usage()
