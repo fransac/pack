@@ -167,6 +167,9 @@ installpackage()
 						error "Failed to download $url."
 					fi
 					;;
+				..*)
+					# Do not access parent directories.
+					;;
 				*)
 					if [ -n "$relpath" ]
 					then
