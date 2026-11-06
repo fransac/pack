@@ -71,5 +71,29 @@ allpackages()
 	done
 }
 
+installedpackages()
+{
+	for p in $(allpackages)
+	do
+		notinst=0
+
+		while read -r l
+		do
+			[ $notinst -eq 1 ] && break
+
+			case "$l" in
+				\/*)
+					[ ! -e "$prefix$l" ] && notinst=1
+					;;
+			esac
+		done < "$p/outs"
+
+		[ $notinst -eq 0 ] && printf '%s\n' "$p"
+	done
+}
+
 # a flag.
 [ $a -eq 1 ] && allpackages | sed "s|^$repo/||"
+
+# l flag.
+[ $l -eq 1 ] && installedpackages | sed "s|^$repo/||"
