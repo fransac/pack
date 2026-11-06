@@ -6,25 +6,30 @@ pack - manage packages
 
 # SYNOPSIS
 
-*pack* -a [-s _repo_] ++
-*pack* -i [-s _repo_] [-p _prefix_] _package_ ... ++
-*pack* -l [-s _repo_] [-p _prefix_] ++
-*pack* -u [-s _repo_] [-p _prefix_] [-r] _package_ ...
+*pack* add [-s _repo_] [-p _prefix_] _package_ ... ++
+*pack* all [-s _repo_] ++
+*pack* del [-s _repo_] [-p _prefix_] [-r] _package_ ... ++
+*pack* ls [-s _repo_] [-p _prefix_]
 
 # DESCRIPTION
 
 *pack* is a package manager.
 
-# OPTIONS
+# COMMANDS
 
-\-a
-	List all packages.
-
-\-i
+add
 	Install _package_ and its runtime dependencies.
 
-\-l
+all
+	List all packages.
+
+del
+	Uninstall _package_.
+
+ls
 	List installed packages.
+
+# OPTIONS
 
 \-p _prefix_
 	Use _prefix_ as the prefix directory. The default  is ""; that is, root.
@@ -34,6 +39,3 @@ pack - manage packages
 
 \-s _repo_
 	Use _repo_ as the package repository. The default is "/src".
-
-\-u
-	Uninstall _package_.

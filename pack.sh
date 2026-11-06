@@ -273,26 +273,25 @@ usage()
 	return 1
 }
 
+# Commands.
+addcmd=0
+allcmd=0
+delcmd=0
+lscmd=0
+
 # Flags.
-aflag=0
-iflag=0
-lflag=0
 pflag=0
 rflag=0
 sflag=0
-uflag=0
 
 # Arguments.
 prefix=''
 repo='/src'
 
-# Command parsing.
-while getopts "ailp:rs:u" o 2> /dev/null
+# Flag parsing.
+while getopts "p:rs:" o 2> /dev/null
 do
 	case "$o" in
-	a) aflag=1 ;;
-	i) iflag=1 ;;
-	l) lflag=1 ;;
 	p)
 		pflag=1
 		prefix="$OPTARG"
@@ -302,27 +301,46 @@ do
 		sflag=1
 		repo="$OPTARG"
 		;;
-	u) uflag=1 ;;
 	*) usage ;;
 	esac
 done
 shift $((OPTIND - 1))
 
+# Command parsing.
+[ $# -eq 0 ] && usage
+case "$1" in
+	add)
+		addcmd=1
+		;;
+	all)
+		allcmd=1
+		;;
+	del)
+		delcmd=1
+		;;
+	ls)
+		lscmd=1
+		;;
+	*)
+		usage
+		;;
+esac
+shift 1
+
 # Check arguments.
-[ $((aflag + iflag + lflag + uflag)) -ne 1 ] && usage
-[ $((aflag + pflag)) -gt 1 ] && usage
-[ $rflag -eq 1 ] && [ $uflag -eq 0 ] && usage
-[ $# -gt 0 ] && [ $iflag -eq 0 ] && [ $uflag -eq 0 ] && usage
-[ $# -eq 0 ] && [ $((iflag + uflag)) -eq 1 ] && usage
+[ $((addcmd + pflag)) -gt 1 ] && usage
+[ $# -gt 0 ] && [ $addcmd -eq 0 ] && [ $delcmd -eq 0 ] && usage
+[ $rflag -eq 1 ] && [ $delcmd -eq 0 ] && usage
+[ $# -eq 0 ] && [ $((addcmd + delcmd )) -eq 1 ] && usage
 
-# a flag.
-[ $aflag -eq 1 ] && allpackages | sed "s|^$repo/||"
+# Add command.
+[ $addcmd -eq 1 ] && installpackage "$1" "$prefix"
 
-# l flag.
-[ $lflag -eq 1 ] && installedpackages "$prefix" | sed "s|^$repo/||"
+# All command.
+[ $allcmd -eq 1 ] && allpackages | sed "s|^$repo/||"
 
-# u flag.
-[ $uflag -eq 1 ] && uninstallpackage "$1" "$prefix" $rflag
+# Del command.
+[ $delcmd -eq 1 ] && uninstallpackage "$1" "$prefix" $rflag
 
-# i flag.
-[ $iflag -eq 1 ] && installpackage "$1" "$prefix"
+# Ls command.
+[ $lscmd -eq 1 ] && installedpackages "$prefix" | sed "s|^$repo/||"
