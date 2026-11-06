@@ -3,65 +3,6 @@ set -eu
 
 program=$(basename "$0")
 
-error()
-{
-	printf '%s\n' "$1" >&2
-	return 1
-}
-
-usage()
-{
-	u=$({
-		echo "Usage: $program -a [-s repo]"
-		echo "       $program -i [-s repo] [-p prefix] package ..."
-		echo "       $program -l [-s repo] [-p prefix]"
-		echo "       $program -u [-s repo] [-p prefix] [-r] package ..."
-	})
-	error "$u"
-}
-
-aflag=0
-iflag=0
-lflag=0
-pflag=0
-rflag=0
-sflag=0
-uflag=0
-
-prefix=''
-repo='/src'
-
-while getopts "ailp:rs:u" o 2> /dev/null
-do
-	case "$o" in
-	a) aflag=1 ;;
-	i) iflag=1 ;;
-	l) lflag=1 ;;
-	p)
-		pflag=1
-		prefix="$OPTARG"
-		;;
-	r) rflag=1 ;;
-	s)
-		sflag=1
-		repo="$OPTARG"
-		;;
-	u) uflag=1 ;;
-	*) usage ;;
-	esac
-done
-
-shift $((OPTIND - 1))
-
-# Check arguments.
-[ $((aflag + iflag + lflag + uflag)) -ne 1 ] && usage
-[ $((aflag + pflag)) -gt 1 ] && usage
-[ $rflag -eq 1 ] && [ $uflag -eq 0 ] && usage
-[ $# -gt 0 ] && [ $iflag -eq 0 ] && [ $uflag -eq 0 ] && usage
-[ $# -eq 0 ] && [ $((iflag + uflag)) -eq 1 ] && usage
-
-# Utilities.
-
 # Returns a newline-separated list of all packages.
 allpackages()
 {
@@ -71,6 +12,13 @@ allpackages()
 		            && [ -f "$d/build" ] \
 		            && printf '%s\n' "$d"
 	done
+}
+
+# Prints message $1 and fails.
+error()
+{
+	printf '%s\n' "$1" >&2
+	return 1
 }
 
 # Returns a multi-line tab-separated list, where each line is a dependency of $1.
@@ -282,6 +230,60 @@ uninstallpackage()
 		done
 	fi
 }
+
+# Errors the synopsis of the program.
+usage()
+{
+	u=$({
+		echo "Usage: $program -a [-s repo]"
+		echo "       $program -i [-s repo] [-p prefix] package ..."
+		echo "       $program -l [-s repo] [-p prefix]"
+		echo "       $program -u [-s repo] [-p prefix] [-r] package ..."
+	})
+	error "$u"
+}
+
+# Flags.
+aflag=0
+iflag=0
+lflag=0
+pflag=0
+rflag=0
+sflag=0
+uflag=0
+
+# Arguments.
+prefix=''
+repo='/src'
+
+# Command parsing.
+while getopts "ailp:rs:u" o 2> /dev/null
+do
+	case "$o" in
+	a) aflag=1 ;;
+	i) iflag=1 ;;
+	l) lflag=1 ;;
+	p)
+		pflag=1
+		prefix="$OPTARG"
+		;;
+	r) rflag=1 ;;
+	s)
+		sflag=1
+		repo="$OPTARG"
+		;;
+	u) uflag=1 ;;
+	*) usage ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+# Check arguments.
+[ $((aflag + iflag + lflag + uflag)) -ne 1 ] && usage
+[ $((aflag + pflag)) -gt 1 ] && usage
+[ $rflag -eq 1 ] && [ $uflag -eq 0 ] && usage
+[ $# -gt 0 ] && [ $iflag -eq 0 ] && [ $uflag -eq 0 ] && usage
+[ $# -eq 0 ] && [ $((iflag + uflag)) -eq 1 ] && usage
 
 # a flag.
 [ $aflag -eq 1 ] && allpackages | sed "s|^$repo/||"
