@@ -242,7 +242,7 @@ uninstallpackage()
 		fi
 	done
 
-	log "Uninstalling $p."
+	log "Uninstalling $1."
 
 	while read -r l
 	do
