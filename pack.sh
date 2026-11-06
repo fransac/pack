@@ -106,7 +106,7 @@ installedpackages()
 
 uninstallpackage()
 {
-	[ $# -ne 1 ] && exit 1
+	[ $# -ne 2 ] && exit 1
 
 	installedpackages | sed "s|^$repo/||" | grep -qx "$1" || exit 0
 
@@ -118,6 +118,14 @@ uninstallpackage()
 				;;
 		esac
 	done < "$repo/$1/outs"
+
+	if [ "$2" -eq 1 ]
+	then
+		for p in $(packagedependencies "$1")
+		do
+			uninstallpackage "$p" 1
+		done
+	fi
 }
 
 # a flag.
@@ -127,4 +135,4 @@ uninstallpackage()
 [ $lflag -eq 1 ] && installedpackages | sed "s|^$repo/||"
 
 # u flag.
-[ $uflag -eq 1 ] && uninstallpackage "$1"
+[ $uflag -eq 1 ] && uninstallpackage "$1" $rflag
