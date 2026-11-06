@@ -6,14 +6,11 @@ A simple POSIX package manager.
 Requirements
 ------------
 
-- C99 compiler
-- C POSIX library
-- OpenSSL
+- cURL
 
 Installation
 ------------
 
-	$ make
 	# make install
 
 Usage

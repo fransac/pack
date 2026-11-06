@@ -1,30 +1,15 @@
 include config.mk
 
-OBJS = pack.o sha256.o
-OUT  = pack
+PROGRAM=pack
 
-.PHONY: clean install uninstall
-
-all: $(OUT)
-
-clean:
-	rm -f $(OUT) $(OBJS) config.h
+.PHONY: install uninstall
 
 install: all
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp -f $(OUT) $(DESTDIR)$(PREFIX)/bin
+	cp -f $(PROGRAM).sh $(DESTDIR)$(PREFIX)/bin/$(PROGRAM)
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
-	cp -f $(OUT).1 $(DESTDIR)$(MANPREFIX)/man1
+	cp -f $(PROGRAM).1 $(DESTDIR)$(MANPREFIX)/man1
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/$(OUT)
-	rm -f $(DESTDIR)$(MANPREFIX)/man1/$(OUT).1
-
-$(OUT): $(OBJS)
-	$(CC) -o $@ $^ $(LIBS) $(LDFLAGS)
-
-config.h: config.def.h
-	cp $^ $@
-
-$(OBJS): config.h
-	$(CC) $(CFLAGS) -c -o $@ $(@:.o=.c)
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(PROGRAM)
+	rm -f $(DESTDIR)$(MANPREFIX)/man1/$(PROGRAM).1
