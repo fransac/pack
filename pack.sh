@@ -72,7 +72,7 @@ installedpackages()
 	done
 }
 
-# Installs package $1 and its runtime dependencies in prefix $2.
+# Installs package $1 and its runtime dependencies in $2.
 installpackage()
 {
 	[ $# -ne 2 ] && return 1
