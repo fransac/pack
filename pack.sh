@@ -75,7 +75,7 @@ packagedependencies()
 {
 	[ $# -ne 1 ] && return 1
 
-	[ ! -e "$repo/$1/depends" ] && return 0
+	[ ! -f "$repo/$1/depends" ] && return 0
 
 	while read -r l
 	do
