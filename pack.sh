@@ -77,7 +77,11 @@ installpackage()
 	[ $# -ne 2 ] && return 1
 
 	# Skip if already installed.
-	installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$" && return 0
+	if installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$"
+	then
+		log "Package $1 is already installed; skipping."
+		return 0
+	fi
 
 	tmp=$(mktemp -dt 'packXXXXXX')
 	chmod 700 "$tmp"
@@ -229,7 +233,11 @@ uninstallpackage()
 	[ $# -ne 3 ] && return 1
 
 	# Skip if not installed.
-	installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$" || return 0
+	if ! installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$"
+	then
+		log "Package $1 is not installed; skipping."
+		return 0
+	fi
 
 	# If at least one installed package runtime-depends on this one, do not
 	# uninstall.
