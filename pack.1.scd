@@ -29,7 +29,7 @@ pack - manage packages
 \-p _prefix_
 	Use _prefix_ as the prefix directory. The default  is ""; that is, root.
 
-\-u
+\-r
 	Also uninstall the runtime dependencies of _package_.
 
 \-s _repo_
