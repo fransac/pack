@@ -9,6 +9,8 @@ fi
 
 program=$(basename "$0")
 
+repo=${PACK_REPOSITORY:-'/src'}
+
 # Returns a newline-separated list of all packages.
 allpackages()
 {
@@ -287,10 +289,10 @@ uninstallpackage()
 # Fails after printing the synopsis of the program to stderr.
 usage()
 {
-	echo "Usage: $program [-s repo] all" >&2
-	echo "       $program [-s repo] [-p prefix] ls" >&2
-	echo "       $program [-s repo] [-p prefix] add [package ...]" >&2
-	echo "       $program [-s repo] [-p prefix] [-r] del [package ...]" >&2
+	echo "Usage: $program all" >&2
+	echo "       $program [-p prefix] ls" >&2
+	echo "       $program [-p prefix] add [package ...]" >&2
+	echo "       $program [-p prefix] [-r] del [package ...]" >&2
 	return 1
 }
 
@@ -303,14 +305,12 @@ lscmd=0
 # Flags.
 pflag=0
 rflag=0
-sflag=0
 
 # Arguments.
 prefix=''
-repo='/src'
 
 # Flag parsing.
-while getopts "p:rs:" o 2> /dev/null
+while getopts "p:r" o 2> /dev/null
 do
 	case "$o" in
 	p)
@@ -318,10 +318,6 @@ do
 		prefix="$OPTARG"
 		;;
 	r) rflag=1 ;;
-	s)
-		sflag=1
-		repo="$OPTARG"
-		;;
 	*) usage ;;
 	esac
 done

@@ -6,10 +6,10 @@ pack - manage packages
 
 # SYNOPSIS
 
-*pack* [-s _repo_] all ++
-*pack* [-s _repo_] [-p _prefix_] ls ++
-*pack* [-s _repo_] [-p _prefix_] add [_package_ ...] ++
-*pack* [-s _repo_] [-p _prefix_] [-r] del [_package_ ...]
+*pack* all ++
+*pack* [-p _prefix_] ls ++
+*pack* [-p _prefix_] add [_package_ ...] ++
+*pack* [-p _prefix_] [-r] del [_package_ ...]
 
 # DESCRIPTION
 
@@ -37,5 +37,7 @@ ls
 \-r
 	Also uninstall the runtime dependencies of _package_.
 
-\-s _repo_
-	Use _repo_ as the package repository. The default is "/src".
+# ENVIRONMENT
+
+_PACK_REPOSITORY_
+	The package repository. If unset, "/src" is used.
