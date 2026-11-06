@@ -44,7 +44,7 @@ packagedependencies()
 
 		# Only print the instances that represent actual existing
 		# packages.
-		if allpackages | sed "s|^$repo/||" | grep -qx "$p"
+		if allpackages | sed "s|^$repo/||" | grep -q "^$p\$"
 		then
 			printf '%s\t%s\n' "$l" "$runtime"
 		fi
@@ -77,7 +77,7 @@ installpackage()
 	[ $# -ne 2 ] && return 1
 
 	# Skip if already installed.
-	installedpackages "$2" | sed "s|^$repo/||" | grep -qx "$1" && return 0
+	installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$" && return 0
 
 	tmp=$(mktemp -dt 'packXXXXXX')
 	chmod 700 "$tmp"
@@ -170,7 +170,7 @@ installpackage()
 
 		# Build if not failed.
 		if [ $fail -eq 0 ] \
-		&& head -n 1 "$repo/$1/outs" | grep -qx '#no-chroot'
+		&& head -n 1 "$repo/$1/outs" | grep -q '^#no-chroot$'
 		then
 			log "Package $1 won't chroot."
 			printf '(y) ' >&2
@@ -229,13 +229,14 @@ uninstallpackage()
 	[ $# -ne 3 ] && return 1
 
 	# Skip if not installed.
-	installedpackages "$2" | sed "s|^$repo/||" | grep -qx "$1" || return 0
+	installedpackages "$2" | sed "s|^$repo/||" | grep -q "^$1\$" || return 0
 
 	# If at least one installed package runtime-depends on this one, do not
 	# uninstall.
 	for p in $(installedpackages "$2" | sed "s|^$repo/||")
 	do
-		if [ -n "$(packagedependencies "$p" | grep -x '$1\t1')" ]
+		rdeps=$(packagedependencies "$p" | grep "^$1\t1\$")
+		if [ -n "$rdeps" ]
 		then
 			log "Not uninstalling $1 since $p depends on it."
 			return 0
