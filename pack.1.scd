@@ -44,4 +44,4 @@ _PACK_REPOSITORY_
 
 # SEE ALSO
 
-_pack_(5)
+_curl_(1) _pack_(5)

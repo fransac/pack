@@ -70,7 +70,7 @@ _sources_
 	Lines not containing all of the required fields are ignored.
 
 	A valid _URL_ is the relative path to a file in the package directory, or a
-	HTTP/HTTPS/FTP/FTPS address.
+	_curl_(1)-compatible address.
 
 	If _URL_ is a local file, it must not be a directory.
 
@@ -81,4 +81,4 @@ _sources_
 
 # SEE ALSO
 
-_pack_(1)
+_curl_(1) _pack_(1)
