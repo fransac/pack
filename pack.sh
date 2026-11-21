@@ -1,20 +1,20 @@
 #!/bin/sh
 set -eu
 
-if [ "$(id -u)" -ne 0 ]
+if [ `id -u` -ne 0 ]
 then
 	printf '%s\n' "Superuser privileges are required." >&2
 	exit 1
 fi
 
-program=$(basename "$0")
+program=`basename "$0"`
 
 repo=${PACK_REPOSITORY:-'/src'}
 
 # Returns a newline-separated list of all packages.
 allpackages()
 {
-	for d in $(find "$repo"/* -type d)
+	for d in `find "$repo"/* -type d`
 	do
 		[ -d "$d" ] && [ -f "$d/outs" ] \
 		            && [ -f "$d/build" ] \
@@ -40,8 +40,8 @@ packagedependencies()
 
 	while read -r l
 	do
-		p=$(printf '%s\n' "$l" | cut -f 1)
-		r=$(printf '%s\n' "$l" | cut -f 2)
+		p=`printf '%s\n' "$l" | cut -f 1`
+		r=`printf '%s\n' "$l" | cut -f 2`
 
 		if [ "$r" == 'runtime' ]
 		then
@@ -64,7 +64,7 @@ installedpackages()
 {
 	[ $# -ne 1 ] && return 1
 
-	for p in $(allpackages)
+	for p in `allpackages`
 	do
 		notinst=0
 		while read -r l
@@ -91,13 +91,13 @@ installpackage()
 		return 0
 	fi
 
-	tmp=$(mktemp -dt 'packXXXXXX')
+	tmp=`mktemp -dt 'packXXXXXX'`
 	chmod 700 "$tmp"
 
 	# Install non-runtime packages to tmp.
-	for p in $(packagedependencies "$1" | grep '\t0$' \
-	                                    | cut -f 1 \
-	                                    || true)
+	for p in `packagedependencies "$1" | grep '\t0$' \
+	                                   | cut -f 1 \
+	                                   || true`
 	do
 		installpackage "$p" "$tmp"
 	done
@@ -115,9 +115,9 @@ installpackage()
 		# Copy sources.
 		[ -e "$repo/$1/sources" ] && while read -r l
 		do
-			sha256=$(printf '%s\n' "$l"  | cut -f 1)
-			url=$(printf '%s\n' "$l"     | cut -f 2)
-			relpath=$(printf '%s\n' "$l" | cut -f 3)
+			sha256=`printf '%s\n' "$l"  | cut -f 1`
+			url=`printf '%s\n' "$l"     | cut -f 2`
+			relpath=`printf '%s\n' "$l" | cut -f 3`
 
 			# The URL field is mandatory.
 			[ -z "$url" ] && continue
@@ -128,7 +128,7 @@ installpackage()
 					then
 						target="$tmp/src/$relpath"
 					else
-						urlbn=$(basename "$url")
+						urlbn=`basename "$url"`
 						target="$tmp/src/$urlbn"
 					fi
 
@@ -172,7 +172,7 @@ installpackage()
 			if ! printf '%s %s\n' "$sha256" "$target" \
 			   | sha256sum -c > /dev/null
 			then
-				expected=$(sha256sum "$target" | cut -d ' ' -f 1)
+				expected=`sha256sum "$target" | cut -d ' ' -f 1`
 
 				log "Hash of $url does not match."
 				log "Expected: $expected"
@@ -211,7 +211,7 @@ installpackage()
 						fail=1
 						break
 					else
-						mkdir -p "$(dirname "$2$l")"
+						mkdir -p `dirname "$2$l"`
 						cp -rf "$tmp$l" "$2$l"
 					fi
 					;;
@@ -230,9 +230,9 @@ installpackage()
 	# Install runtime packages. On fail, uninstall the dependant package
 	# and all of the others runtime dependencies, which could have been
 	# already installed.
-	for p in $(packagedependencies "$1" | grep '\t1$' \
-	                                    | cut -f 1 \
-	                                    || true)
+	for p in `packagedependencies "$1" | grep '\t1$' \
+	                                   | cut -f 1 \
+	                                   || true`
 	do
 		installpackage "$p" "$2"
 	done || uninstallpackage "$1" "$2" 1
@@ -253,9 +253,9 @@ uninstallpackage()
 
 	# If at least one installed package runtime-depends on this one, do not
 	# uninstall.
-	for p in $(installedpackages "$2" | sed "s|^$repo/||")
+	for p in `installedpackages "$2" | sed "s|^$repo/||"`
 	do
-		rdeps=$(packagedependencies "$p" | grep "^$1\t1\$" || true)
+		rdeps=`packagedependencies "$p" | grep "^$1\t1\$" || true`
 		if [ -n "$rdeps" ]
 		then
 			log "Not uninstalling $1 since $p depends on it."
@@ -277,9 +277,9 @@ uninstallpackage()
 	# Recursive.
 	if [ "$3" -eq 1 ]
 	then
-		for p in $(packagedependencies "$1" | grep '\t1$'\
-		                                    | cut -f 1 \
-		                                    || true)
+		for p in `packagedependencies "$1" | grep '\t1$'\
+		                                   | cut -f 1 \
+		                                   || true`
 		do
 			uninstallpackage "$p" "$2" 1
 		done
@@ -321,7 +321,7 @@ do
 	*) usage ;;
 	esac
 done
-shift $((OPTIND - 1))
+shift `expr $OPTIND - 1`
 
 # Command parsing.
 [ $# -eq 0 ] && usage
@@ -345,7 +345,7 @@ esac
 shift 1
 
 # Check arguments.
-[ $((addcmd + pflag)) -gt 1 ] && usage
+[ $addcmd -eq 1 ] && [ $pflag -eq 1 ] && usage
 [ $# -gt 0 ] && [ $addcmd -eq 0 ] && [ $delcmd -eq 0 ] && usage
 [ $rflag -eq 1 ] && [ $delcmd -eq 0 ] && usage
 
