@@ -6,8 +6,8 @@ A simple POSIX package manager.
 Requirements
 ------------
 
-- cURL
-- scdoc
+- curl(1) (runtime)
+- scdoc(1)
 
 Installation
 ------------
